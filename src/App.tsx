@@ -1,13 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-import './App.css';
+import Countries from './components/Countries';
+import Header from './components/Header';
+
+import { CountriesTypes } from './types/types';
+
+const url: string = process.env.COUNTRIES_URL || '';
 
 const App = () => {
+  const [data, setData] = useState<CountriesTypes[]>([]);
+  const getData = async () => {
+    try {
+      const response = await fetch(url);
+      const fetchedData: CountriesTypes[] = await response.json();
+      setData(fetchedData);
+    } catch (err) {
+      return { error: true, message: 'Error Fetch Data' };
+    }
+  };
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div className="App">
-      <header>
-        <h1>Template for Typescript - React App</h1>
-      </header>
+      <Header title="Typescript React Pagination" />
+      <div className="container px-2">
+        {data.length > 0 && <Countries data={data} startFrom={1} />}
+        {data.length > 0 && (
+          <Countries data={data} startFrom={3} itemsPerPage={15} />
+        )}
+      </div>
     </div>
   );
 };
