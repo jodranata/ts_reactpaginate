@@ -1,5 +1,8 @@
-export interface CountriesTypes {
-  [key: string]: number | string | null;
+export interface IndexArray {
+  [key: string]: string | number | null;
+}
+
+export interface CountriesTypes extends IndexArray {
   id: number;
   name: string;
   iso3: string;

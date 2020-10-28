@@ -4,7 +4,7 @@ import usePagination, {
   PaginationTypes,
 } from '../hooks/usePagination';
 
-import { CountriesTypes } from '../types/types';
+import { CountriesTypes, IndexArray } from '../types/types';
 
 interface OptionsTypes {
   label: string;
@@ -30,6 +30,7 @@ const Countries = ({
     prevPage,
     nextPage,
     pagination,
+    filteredData,
     setSearching,
     setFilteredData,
   } = usePagination({
@@ -45,6 +46,44 @@ const Countries = ({
       : '',
   );
   const [searchFor, setSearchFor] = useState('');
+  const [sortByKey, setSortByKey] = useState('name');
+  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+
+  const columns = [
+    { label: 'Country', sortKey: 'name' },
+    { label: 'Capital', sortKey: 'capital' },
+    { label: 'Country Code', sortKey: 'iso2' },
+    { label: 'Currency', sortKey: 'currency' },
+    { label: 'Phone Code', sortKey: 'phone_code' },
+  ];
+
+  const sortData = <TSort extends IndexArray>(
+    dataArr: TSort[],
+    sortBy: string,
+    orderBy: 'asc' | 'desc',
+  ) => {
+    const sorted = dataArr.sort((a: TSort, b: TSort): number => {
+      const aSort = a[sortBy] || '';
+      const bSort = b[sortBy] || '';
+      if (orderBy === 'asc') {
+        if (aSort < bSort) {
+          return -1;
+        }
+        if (aSort > bSort) {
+          return 1;
+        }
+        return 0;
+      }
+      if (aSort < bSort) {
+        return 1;
+      }
+      if (aSort > bSort) {
+        return -1;
+      }
+      return 0;
+    });
+    return sorted;
+  };
 
   const handleSubmit = (
     e:
@@ -53,19 +92,31 @@ const Countries = ({
   ) => {
     e.preventDefault();
     setSearching(true);
-    const filteredData = [...data].filter((country: CountriesTypes) => {
+    const searchedData = [...data].filter((country: CountriesTypes) => {
       const searchKey = searchBy || 'name';
       return `${country[searchKey] || ''}`
         .toLowerCase()
         .includes(search.trim().toLowerCase());
     });
-    setFilteredData(filteredData);
+    const sortedData = sortData([...searchedData], sortByKey, order);
+    setFilteredData(sortedData);
     setSearchFor(search);
     setSearching(false);
   };
 
+  const handleSort = (sortBy: string, orderBy: 'asc' | 'desc') => {
+    if (sortByKey !== sortBy) {
+      setSortByKey(sortBy);
+    }
+    if (order !== orderBy) {
+      setOrder(orderBy);
+    }
+    const sortedData = sortData([...filteredData], sortBy, orderBy);
+    setFilteredData(sortedData);
+  };
+
   return (
-    <>
+    <div className="wrapper">
       {searchByOptions && searchByOptions.length > 0 && (
         <form className="my-3 is-flex is-justify-content-center">
           <div className="select is-info mr-2">
@@ -108,11 +159,32 @@ const Countries = ({
           <table className="table is-fullwidth is-striped">
             <thead>
               <tr>
-                <th>Country</th>
-                <th>Capital</th>
-                <th>Code</th>
-                <th>Currency</th>
-                <th>Phone Code</th>
+                {columns.map((col: { label: string; sortKey: string }) => (
+                  <th
+                    key={col.sortKey}
+                    onClick={() =>
+                      handleSort(
+                        col.sortKey,
+                        sortByKey === col.sortKey
+                          ? order === 'asc'
+                            ? 'desc'
+                            : 'asc'
+                          : 'asc',
+                      )
+                    }
+                  >
+                    {col.label}
+                    {sortByKey === col.sortKey && (
+                      <span className="icon">
+                        {order === 'asc' ? (
+                          <i className="fas fa-sort-up" />
+                        ) : (
+                          <i className="fas fa-sort-down" />
+                        )}
+                      </span>
+                    )}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -176,7 +248,7 @@ const Countries = ({
           <div className="message-body has-text-centered">No Results</div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

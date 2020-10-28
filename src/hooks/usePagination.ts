@@ -20,6 +20,7 @@ interface UsePaginationReturnTypes<TData> {
   nextPage: <T, E>(e: SyntheticEvent<T, E>) => void;
   setSearching: React.Dispatch<React.SetStateAction<boolean>>;
   setFilteredData: React.Dispatch<React.SetStateAction<TData[]>>;
+  filteredData: TData[];
 }
 
 const usePagination = <TData>({
@@ -128,6 +129,7 @@ const usePagination = <TData>({
     slicedData,
     pagination,
     changePage,
+    filteredData,
     prevPage: goToPrevPage,
     nextPage: goToNextPage,
     setSearching,
