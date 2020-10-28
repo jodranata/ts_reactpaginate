@@ -26,7 +26,19 @@ const App = () => {
     <div className="App">
       <Header title="Typescript React Pagination" />
       <div className="container px-2">
-        {data.length > 0 && <Countries data={data} startFrom={1} />}
+        {data.length > 0 && (
+          <Countries
+            data={data}
+            startFrom={1}
+            searchByOptions={[
+              { label: 'Country', value: 'name' },
+              { label: 'Capital', value: 'capital' },
+              { label: 'Country Code', value: 'iso2' },
+              { label: 'Currency', value: 'currency' },
+              { label: 'Phone Code', value: 'phone_code' },
+            ]}
+          />
+        )}
         {data.length > 0 && (
           <Countries data={data} startFrom={3} itemsPerPage={15} />
         )}

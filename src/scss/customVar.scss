@@ -1,6 +1,15 @@
 $pagination-current-background-color: #d66442;
 $pagination-current-border-color: #d66442;
+$pagination-focus-border-color: #d66442;
+$button-background-color: #d66442;
+$button-hover-color: rgb(243, 243, 243);
+$button-focus-border-color: #f59477;
+$button-focus-color: rgb(243, 243, 243);
+$button-focus-box-shadow-color: #f594778f;
+$button-color: rgb(243, 243, 243);
+$button-active-color: rgb(243, 243, 243);
 
 @import '../../node_modules/bulma/sass/utilities/_all.sass';
 @import '../../node_modules/bulma/sass/base/_all.sass';
 @import '../../node_modules//bulma/sass/components/pagination.sass';
+@import '../../node_modules//bulma/sass/elements/button.sass';

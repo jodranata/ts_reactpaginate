@@ -1,4 +1,5 @@
 export interface CountriesTypes {
+  [key: string]: number | string | null;
   id: number;
   name: string;
   iso3: string;

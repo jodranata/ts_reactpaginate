@@ -1,4 +1,4 @@
-import { useState, SyntheticEvent } from 'react';
+import { useState, useEffect, SyntheticEvent } from 'react';
 
 export interface UsePaginationPropsTypes<TData> {
   data: TData[];
@@ -18,6 +18,8 @@ interface UsePaginationReturnTypes<TData> {
   changePage: <T, E>(page: number, e: SyntheticEvent<T, E>) => void;
   prevPage: <T, E>(e: SyntheticEvent<T, E>) => void;
   nextPage: <T, E>(e: SyntheticEvent<T, E>) => void;
+  setSearching: React.Dispatch<React.SetStateAction<boolean>>;
+  setFilteredData: React.Dispatch<React.SetStateAction<TData[]>>;
 }
 
 const usePagination = <TData>({
@@ -26,14 +28,29 @@ const usePagination = <TData>({
   itemsPerPage,
 }: UsePaginationPropsTypes<TData>): UsePaginationReturnTypes<TData> => {
   const perPage = itemsPerPage || 10;
-  const pages = Math.ceil(data.length / perPage);
+  const [filteredData, setFilteredData] = useState(data);
+  const [searching, setSearching] = useState(false);
+  const pages = Math.ceil(filteredData.length / perPage);
   const pagination: PaginationTypes[] = [];
   const [currentPage, setCurrentPage] = useState(
     startFrom <= pages ? startFrom : 1,
   );
   const [slicedData, setSlicedData] = useState(
-    [...data].slice((currentPage - 1) * perPage, currentPage * perPage),
+    [...filteredData].slice((currentPage - 1) * perPage, currentPage * perPage),
   );
+
+  useEffect(() => {
+    setSlicedData(
+      [...filteredData].slice(
+        (currentPage - 1) * perPage,
+        currentPage * perPage,
+      ),
+    );
+    if (searching) {
+      setCurrentPage(1);
+      setSearching(false);
+    }
+  }, [filteredData, perPage, currentPage, searching]);
 
   const paginationPush = (
     id: number,
@@ -113,6 +130,8 @@ const usePagination = <TData>({
     changePage,
     prevPage: goToPrevPage,
     nextPage: goToNextPage,
+    setSearching,
+    setFilteredData,
   };
 };
 
