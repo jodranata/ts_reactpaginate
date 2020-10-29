@@ -1,3 +1,3 @@
-## React-typescript template
+## Typescript-React Pagination
 
-Bundled using webpack, with typescript-eslint as linters
+A Simple pagination project using Typescript, React and Bulma
